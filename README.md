@@ -7,9 +7,10 @@
 
 > A full-stack machine learning web application that predicts telecom customer churn with 80.38% accuracy.
 
-## 🌐 Live Demo
-**[View Live Application →](https://yourusername.pythonanywhere.com)**
-*(Note: Link will be active after deployment)*
+## 📸 Screenshots
+<img width="1919" height="1199" alt="Screenshot 2026-08-01 140200" src="https://github.com/user-attachments/assets/823b207e-7cda-421a-b1be-d0017279692a" />
+<img width="1919" height="1199" alt="Screenshot 2026-08-01 140212" src="https://github.com/user-attachments/assets/4e09b7c1-6292-4f76-a2c5-4c5c45603419" />
+
 
 ## ✨ Features
 - 📊 Live analytics dashboard with 4 KPI metric cards
