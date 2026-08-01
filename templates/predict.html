@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Predict Churn</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #f1f5f9; min-height: 100vh; }
+
+    nav {
+      background: #161926; padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #2d3348;
+    }
+    nav .logo { font-size: 20px; font-weight: 700; color: #00d4ff; }
+    nav .links a { color: #94a3b8; text-decoration: none; margin-left: 24px; font-size: 14px; transition: color 0.2s; }
+    nav .links a:hover, nav .links a.active { color: #00d4ff; }
+
+    .container { max-width: 680px; margin: 0 auto; padding: 40px 24px; }
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { color: #64748b; font-size: 14px; margin-bottom: 32px; }
+
+    .form-card {
+      background: #1e2130; border-radius: 16px;
+      padding: 32px; border: 1px solid #2d3348;
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block; font-size: 13px; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 8px; font-weight: 600;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%; padding: 12px 14px;
+      background: #0f1117; border: 1px solid #2d3348;
+      border-radius: 8px; color: #f1f5f9; font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none; border-color: #00d4ff;
+    }
+    .form-group .hint { font-size: 11px; color: #475569; margin-top: 5px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .btn-submit {
+      width: 100%; padding: 14px;
+      background: #00d4ff; color: #0f1117;
+      border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s;
+      margin-top: 8px;
+    }
+    .btn-submit:hover { background: #00b8d9; }
+
+    .back-link { display: block; text-align: center; margin-top: 16px; color: #64748b; font-size: 13px; text-decoration: none; }
+    .back-link:hover { color: #00d4ff; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">📊 Churn Analyzer</div>
+  <div class="links">
+    <a href="/">Dashboard</a>
+    <a href="/predict" class="active">Predict</a>
+    <a href="/data">Raw Data</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>🔮 Predict Customer Churn</h1>
+  <p class="subtitle">Enter customer details below to predict whether they will churn.</p>
+
+  <div class="form-card">
+    <form method="POST" action="/predict">
+
+      <div class="form-group">
+        <label>Senior Citizen</label>
+        <select name="SeniorCitizen" required>
+          <option value="0">No — Not a Senior Citizen</option>
+          <option value="1">Yes — Senior Citizen</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tenure (months)</label>
+          <input type="number" name="tenure" placeholder="e.g. 24" min="0" max="72" required/>
+          <div class="hint">How long the customer has been with us</div>
+        </div>
+        <div class="form-group">
+          <label>Monthly Charges ($)</label>
+          <input type="number" name="MonthlyCharges" placeholder="e.g. 65.50" step="0.01" min="0" required/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Total Charges ($)</label>
+        <input type="number" name="TotalCharges" placeholder="e.g. 1500.00" step="0.01" min="0" required/>
+        <div class="hint">Usually tenure × monthly charges</div>
+      </div>
+
+      <button type="submit" class="btn-submit">🚀 Predict Now</button>
+    </form>
+  </div>
+
+  <a href="/" class="back-link">← Back to Dashboard</a>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customer Churn Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #f1f5f9; min-height: 100vh; }
+ 
+    nav {
+      background: #161926; padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #2d3348;
+    }
+    nav .logo { font-size: 20px; font-weight: 700; color: #00d4ff; }
+    nav .links a { color: #94a3b8; text-decoration: none; margin-left: 24px; font-size: 14px; transition: color 0.2s; }
+    nav .links a:hover, nav .links a.active { color: #00d4ff; }
+ 
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { color: #64748b; font-size: 14px; margin-bottom: 32px; }
+ 
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 36px; }
+    .kpi-card { background: #1e2130; border-radius: 12px; padding: 22px 24px; border-left: 4px solid; }
+    .kpi-card .label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .kpi-card .value { font-size: 32px; font-weight: 700; font-family: monospace; }
+    .kpi-card .sub   { font-size: 12px; margin-top: 4px; }
+    .kpi-card.blue   { border-color: #3b82f6; } .kpi-card.blue .value  { color: #3b82f6; }
+    .kpi-card.red    { border-color: #e74c3c; } .kpi-card.red .value   { color: #e74c3c; } .kpi-card.red .sub { color: #e74c3c; }
+    .kpi-card.cyan   { border-color: #00d4ff; } .kpi-card.cyan .value  { color: #00d4ff; }
+    .kpi-card.yellow { border-color: #f59e0b; } .kpi-card.yellow .value{ color: #f59e0b; }
+ 
+    .section-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: #e2e8f0; margin-bottom: 8px; }
+    .section-title::before { content:''; width:4px; height:20px; background:#00d4ff; border-radius:2px; display:block; }
+ 
+    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin-bottom: 36px; }
+ 
+    .chart-card {
+      background: #1e2130; border-radius: 12px; padding: 20px;
+      border: 1px solid #2d3348; cursor: pointer; position: relative;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .chart-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,212,255,0.15); border-color: #00d4ff55; }
+    .chart-card .chart-title { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px; font-weight: 600; }
+    .chart-card img { width: 100%; border-radius: 8px; display: block; }
+ 
+    .zoom-badge {
+      position: absolute; top: 14px; right: 14px;
+      background: #00d4ff22; border: 1px solid #00d4ff55;
+      color: #00d4ff; font-size: 11px; padding: 3px 8px;
+      border-radius: 6px; opacity: 0; transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .chart-card:hover .zoom-badge { opacity: 1; }
+ 
+    /* MODAL */
+    #chartModal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.9); z-index: 9999;
+      justify-content: center; align-items: center; padding: 20px;
+    }
+    #chartModal.open { display: flex; }
+    .modal-box {
+      background: #1e2130; border-radius: 16px; padding: 24px;
+      max-width: 94vw; max-height: 92vh; width: 100%;
+      border: 1px solid #2d3348; display: flex; flex-direction: column;
+      position: relative;
+    }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-label { font-size: 13px; color: #00d4ff; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    .modal-close {
+      background: #2d3348; border: none; color: #94a3b8;
+      width: 34px; height: 34px; border-radius: 8px; font-size: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .modal-close:hover { background: #e74c3c33; color: #e74c3c; }
+    .modal-body { overflow: auto; flex: 1; display: flex; justify-content: center; align-items: flex-start; }
+    .modal-body img { max-width: 100%; border-radius: 8px; }
+    .modal-hint { text-align: center; margin-top: 12px; font-size: 12px; color: #475569; }
+    kbd { background: #2d3348; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 11px; }
+ 
+    .actions { display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
+    .btn { padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: #00d4ff; color: #0f1117; } .btn-primary:hover { background: #00b8d9; }
+    .btn-outline { background: transparent; border: 1px solid #2d3348; color: #94a3b8; } .btn-outline:hover { border-color: #00d4ff; color: #00d4ff; }
+ 
+    footer { text-align: center; padding: 24px; color: #334155; font-size: 12px; border-top: 1px solid #1e2130; margin-top: 40px; }
+  </style>
+</head>
+<body>
+ 
+<nav>
+  <div class="logo">📊 Churn Analyzer</div>
+  <div class="links">
+    <a href="/" class="active">Dashboard</a>
+    <a href="/predict">Predict</a>
+    <a href="/data">Raw Data</a>
+  </div>
+</nav>
+ 
+<div class="container">
+  <h1>Customer Churn Dashboard</h1>
+  <p class="subtitle">Telecom Customer Analytics — Live from MySQL Database</p>
+ 
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="label">Total Customers</div>
+      <div class="value">{{ total }}</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="label">Churned Customers</div>
+      <div class="value">{{ churned }}</div>
+      <div class="sub">&#8593; {{ churn_pct }}% churn rate</div>
+    </div>
+    <div class="kpi-card cyan">
+      <div class="label">Avg Tenure</div>
+      <div class="value">{{ avg_tenure }}<span style="font-size:16px"> mo</span></div>
+    </div>
+    <div class="kpi-card yellow">
+      <div class="label">Avg Monthly Charge</div>
+      <div class="value">${{ avg_charges }}</div>
+    </div>
+  </div>
+ 
+  <div class="section-title">Visual Analysis</div>
+  <p style="color:#475569;font-size:12px;margin-bottom:16px;">&#128269; Click any chart to view full size</p>
+ 
+  <div class="charts-grid">
+    <div class="chart-card" onclick="openChart('/static/churn_overview_demographics.png','Overview &amp; Demographics')">
+      <div class="chart-title">Overview &amp; Demographics</div>
+      <span class="zoom-badge">&#128269; Expand</span>
+      <img src="/static/churn_overview_demographics.png" alt="Overview"/>
+    </div>
+    <div class="chart-card" onclick="openChart('/static/churn_services.png','Services Analysis')">
+      <div class="chart-title">Services Analysis</div>
+      <span class="zoom-badge">&#128269; Expand</span>
+      <img src="/static/churn_services.png" alt="Services"/>
+    </div>
+    <div class="chart-card" onclick="openChart('/static/churn_contract_payment.png','Contract &amp; Payment')">
+      <div class="chart-title">Contract &amp; Payment</div>
+      <span class="zoom-badge">&#128269; Expand</span>
+      <img src="/static/churn_contract_payment.png" alt="Contract"/>
+    </div>
+    <div class="chart-card" onclick="openChart('/static/churn_charges.png','Charges Analysis')">
+      <div class="chart-title">Charges Analysis</div>
+      <span class="zoom-badge">&#128269; Expand</span>
+      <img src="/static/churn_charges.png" alt="Charges"/>
+    </div>
+  </div>
+ 
+  <div class="section-title">Quick Actions</div>
+  <div class="actions">
+    <a href="/predict" class="btn btn-primary">&#128302; Predict Customer Churn</a>
+    <a href="/data"    class="btn btn-outline">&#128451; View Raw Data (JSON)</a>
+  </div>
+</div>
+ 
+<!-- MODAL LIGHTBOX -->
+<div id="chartModal" onclick="bgClose(event)">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-label" id="modalLabel">Chart</div>
+      <button class="modal-close" onclick="closeChart()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <img id="modalImg" src="" alt="Chart fullsize"/>
+    </div>
+    <div class="modal-hint">Press <kbd>Esc</kbd> to close &nbsp;|&nbsp; Scroll to zoom if needed</div>
+  </div>
+</div>
+ 
+<footer>Customer Churn Analysis Project &nbsp;|&nbsp; Built with Flask + MySQL + Python</footer>
+ 
+<script>
+  function openChart(src, title) {
+    document.getElementById('modalImg').src = src;
+    document.getElementById('modalLabel').textContent = title;
+    document.getElementById('chartModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeChart() {
+    document.getElementById('chartModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function bgClose(e) {
+    if (e.target.id === 'chartModal') closeChart();
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeChart(); });
+</script>
+ 
+</body>
+</html>
+ 
+
+
+

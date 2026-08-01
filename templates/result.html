@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prediction Result</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #f1f5f9; min-height: 100vh; }
+ 
+    nav {
+      background: #161926; padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #2d3348;
+    }
+    nav .logo { font-size: 20px; font-weight: 700; color: #00d4ff; }
+    nav .links a { color: #94a3b8; text-decoration: none; margin-left: 24px; font-size: 14px; transition: color 0.2s; }
+    nav .links a:hover { color: #00d4ff; }
+ 
+    .container { max-width: 640px; margin: 0 auto; padding: 40px 24px; text-align: center; }
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { color: #64748b; font-size: 14px; margin-bottom: 36px; }
+ 
+    .result-card {
+      background: #1e2130; border-radius: 16px;
+      padding: 40px 32px; border: 1px solid #2d3348;
+      margin-bottom: 24px;
+    }
+    .result-icon { font-size: 64px; margin-bottom: 16px; }
+    .result-label { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+    .result-label.churn { color: #e74c3c; }
+    .result-label.stay  { color: #2ecc71; }
+ 
+    .prob-section { margin: 24px 0; }
+    .prob-label { font-size: 13px; color: #64748b; margin-bottom: 8px; }
+    .prob-bar-bg { background: #0f1117; border-radius: 99px; height: 12px; overflow: hidden; margin-bottom: 6px; }
+    .prob-bar-fill { height: 100%; border-radius: 99px; }
+    .prob-bar-fill.high { background: #e74c3c; }
+    .prob-bar-fill.low  { background: #2ecc71; }
+    .prob-pct { font-size: 22px; font-weight: 700; font-family: monospace; }
+    .prob-pct.high { color: #e74c3c; }
+    .prob-pct.low  { color: #2ecc71; }
+ 
+    .summary-card {
+      background: #1e2130; border-radius: 12px;
+      padding: 20px 24px; text-align: left;
+      border: 1px solid #2d3348; margin-bottom: 24px;
+    }
+    .summary-title { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; font-weight: 600; }
+    .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #2d334844; }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row .key { color: #64748b; font-size: 13px; }
+    .summary-row .val { color: #f1f5f9; font-size: 13px; font-weight: 600; font-family: monospace; }
+ 
+    .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn { padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-primary { background: #00d4ff; color: #0f1117; }
+    .btn-primary:hover { background: #00b8d9; }
+    .btn-outline { background: transparent; border: 1px solid #2d3348; color: #94a3b8; }
+    .btn-outline:hover { border-color: #00d4ff; color: #00d4ff; }
+  </style>
+</head>
+<body>
+ 
+<nav>
+  <div class="logo">📊 Churn Analyzer</div>
+  <div class="links">
+    <a href="/">Dashboard</a>
+    <a href="/predict">Predict</a>
+    <a href="/data">Raw Data</a>
+  </div>
+</nav>
+ 
+<div class="container">
+  <h1>Prediction Result</h1>
+  <p class="subtitle">ML model prediction based on the input data</p>
+ 
+  <!-- RESULT CARD -->
+  <div class="result-card">
+ 
+    {% if probability > 50 %}
+      <div class="result-icon">&#9888;</div>
+      <div class="result-label churn">Will Churn</div>
+    {% else %}
+      <div class="result-icon">&#10004;</div>
+      <div class="result-label stay">Will Stay</div>
+    {% endif %}
+ 
+    <div class="prob-section">
+      <div class="prob-label">Churn Probability</div>
+      <div class="prob-bar-bg">
+        <div class="prob-bar-fill {% if probability > 50 %}high{% else %}low{% endif %}"
+             style="width: {{ probability }}%"></div>
+      </div>
+      <div class="prob-pct {% if probability > 50 %}high{% else %}low{% endif %}">
+        {{ probability }}%
+      </div>
+    </div>
+  </div>
+ 
+  <!-- INPUT SUMMARY -->
+  <div class="summary-card">
+    <div class="summary-title">Customer Input Summary</div>
+    <div class="summary-row">
+      <span class="key">Senior Citizen</span>
+      <span class="val">{% if form_data.SeniorCitizen == '1' %}Yes{% else %}No{% endif %}</span>
+    </div>
+    <div class="summary-row">
+      <span class="key">Tenure</span>
+      <span class="val">{{ form_data.tenure }} months</span>
+    </div>
+    <div class="summary-row">
+      <span class="key">Monthly Charges</span>
+      <span class="val">${{ form_data.MonthlyCharges }}</span>
+    </div>
+    <div class="summary-row">
+      <span class="key">Total Charges</span>
+      <span class="val">${{ form_data.TotalCharges }}</span>
+    </div>
+  </div>
+ 
+  <!-- BUTTONS -->
+  <div class="btn-row">
+    <a href="/predict" class="btn btn-primary">Predict Another</a>
+    <a href="/"        class="btn btn-outline">Back to Dashboard</a>
+  </div>
+</div>
+ 
+</body>
+</html>
