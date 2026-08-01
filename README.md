@@ -8,8 +8,14 @@
 > A full-stack machine learning web application that predicts telecom customer churn with 80.38% accuracy.
 
 ## 📸 Screenshots
+
 <img width="1919" height="1199" alt="Screenshot 2026-08-01 140200" src="https://github.com/user-attachments/assets/823b207e-7cda-421a-b1be-d0017279692a" />
+
 <img width="1919" height="1199" alt="Screenshot 2026-08-01 140212" src="https://github.com/user-attachments/assets/4e09b7c1-6292-4f76-a2c5-4c5c45603419" />
+
+<img width="1919" height="1092" alt="Screenshot 2026-08-01 141424" src="https://github.com/user-attachments/assets/59520e26-e6b8-4bcb-af78-34b34d318f77" />
+
+<img width="1919" height="1094" alt="Screenshot 2026-08-01 141401" src="https://github.com/user-attachments/assets/2aa2caac-4fd9-4731-b705-613b7ad22b7f" />
 
 
 ## ✨ Features
